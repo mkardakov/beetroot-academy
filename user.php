@@ -32,6 +32,29 @@ $error = [];
             break;
 
     }
+
+    // array_column
+    // array_search
+    // min
+// max
+// sort
+
+//   $ages = array_column($users, 'age');
+//   $key = array_search(65, $ages);
+//
+////   if ($key != false) {
+////       echo "The Age found";
+////   } else {
+////       echo "NOT FOUND";
+////   }
+//   var_dump($ages);
+//   echo "<br />";
+//   rsort($ages);
+//   var_dump($ages);
+//   echo "<br />";
+//   var_dump(max($ages));
+//   exit();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,7 +73,7 @@ $error = [];
         <a href="?lang=ua" class="badge badge-secondary">Украинский</a>
         <a href="?lang=en" class="badge badge-success">Английский</a>
     </div>
-    <form method="post" action="user.php">
+    <form method="post" action="stats.php">
         <div class="form-group">
             <label for="formGroupExampleInput"><?=$translation['name'] ?></label>
             <input type="text" class="form-control" id="formGroupExampleInput" name="name" placeholder="Example input"
@@ -87,12 +110,13 @@ $error = [];
                    value="<?= $_POST['email'] ?? 'example@gmail.com' ?>">
         </div>
         <div class="form-group">
+            <?php $gender = empty($_POST['gender']) ? 'Others' : $_POST['gender']; ?>
             <label for="exampleFormControlSelect1"><?=$translation['gender'] ?></label>
             <select class="form-control" id="exampleFormControlSelect1" name="gender">
                 <option></option>
-                <option <?=$_POST['gender'] == 'Man' ? 'selected': '' ?>>Man</option>
-                <option <?=$_POST['gender'] == 'Woman' ? 'selected': '' ?>>Woman</option>
-                <option <?=$_POST['gender'] == 'Others' ? 'selected': '' ?>>Others</option>
+                <option <?=$gender == 'Man' ? 'selected': '' ?>>Man</option>
+                <option <?=$gender == 'Woman' ? 'selected': '' ?>>Woman</option>
+                <option <?=$gender == 'Others' ? 'selected': '' ?>>Others</option>
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Отправить</button>
