@@ -40,19 +40,26 @@ if (!empty($_POST)) {
 }
 
 
-//print_r($users);
-
 //Находим самого старого пользователя и выводим его имя. DONE
 $ages = array_column($users, 'age');
-var_dump($ages);
 $maxAge = max($ages);
 $maxAgeId = array_search($maxAge, $ages);
-echo NEW_LINE;
-echo NEW_LINE;
-echo NEW_LINE;
-var_dump($maxAgeId);
-echo NEW_LINE;
+
+
+$ages = array_column($users, 'age');
+$maxAge = max($ages);
+$maxAgeId = array_search($maxAge, $ages);
 $oldestUser = $users[$maxAgeId];
+
+$users2 = $users;
+unset($users2[$maxAgeId]);
+
+$ages = array_column($users2, 'age');
+$users2 = array_values($users2);
+$maxAgeId = array_search($maxAge, $ages);
+if (false !== $maxAgeId) {
+    $oldestUser2 = $users2[$maxAgeId];
+}
 
 
 //Вывести общее количество юзеров. DONE
@@ -60,12 +67,10 @@ $oldestUser = $users[$maxAgeId];
 
 //Вывести всю информацию о пользователе с именем Jack в виде таблицы
 $names = array_column($users, 'name');
-print_r($names);
 define('JACK_NAME', 'Jack');
 // ID of user Jack
 $jackId = array_search(JACK_NAME, $names);
 echo NEW_LINE;
-print_r($users[$jackId]);
 //Вывести в таблицу случайного юзера, see rand()
 
 $randomUserId = rand(0, count($users) - 1);
@@ -87,7 +92,15 @@ $randomUser = $users[$randomUserId];
 <div class="container">
     <ul>
         <li>Самый старый пользователь: <?=$oldestUser['name'] . " " . $oldestUser['surname'] . ", age:" . $oldestUser['age']; ?></li>
+        <?php if (!empty($oldestUser2)) : ?>
+        <li>Самый старый пользователь (2): <?=$oldestUser2['name'] . " " . $oldestUser2['surname'] . ", age:" . $oldestUser2['age']; ?></li>
+        <?php endif ?>
         <li>Общее количество юзеров: <?=count($users) ?></li>
+        <li>Питомцы Меркель: <?php
+            $animals = $users[3]['animals'];
+            sort($animals);
+            echo "<ul><li>" . implode('</li><li>', $animals) . "</li></ul>"
+            ?></li>
     </ul>
     <table class="table table-striped">
         <thead>
@@ -96,8 +109,7 @@ $randomUser = $users[$randomUserId];
             <th>Name</th>
             <th>Surname</th>
             <th>Age</th>
-            <th></th>
-            <th></th>
+            <th>Picture</th>
         </tr>
         </thead>
         <tbody>
@@ -106,12 +118,14 @@ $randomUser = $users[$randomUserId];
            <td><?=$users[$jackId]['name'] ?></td>
            <td><?=$users[$jackId]['surname'] ?></td>
            <td><?=$users[$jackId]['age'] ?></td>
+           <td><img src="<?=$users[$jackId]['avatar'] ?>" style="width:60px"/></td>
         </tr>
         <tr>
            <td><?=$randomUserId ?></td>
            <td><?=$randomUser['name'] ?></td>
            <td><?=$randomUser['surname'] ?></td>
            <td><?=$randomUser['age'] ?></td>
+           <td><img src="<?=$randomUser['avatar'] ?>" style="width:60px"/></td>
         </tr>
         </tbody>
     </table>
