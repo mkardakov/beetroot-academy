@@ -35,6 +35,15 @@ $users = [
     ]
 ];
 
+// foreach()
+// for
+// while/ do while
+
+//foreach ($users as $key => &$user) {
+//    echo "Key is: $key" . " " . strtoupper($user['name']) . '<br />';
+//    $user['name'] = strtoupper($user['name']);
+//}
+
 if (!empty($_POST)) {
     $users[] = $_POST;
 }
@@ -77,6 +86,61 @@ $randomUserId = rand(0, count($users) - 1);
 $randomUser = $users[$randomUserId];
 //Вывести аватарки
 //Вывести домашних питомцев Меркель в алфавитном порядке
+if (!empty($_GET['sort'])) {
+    switch ($_GET['sort']) {
+        case 'id':
+            if (!empty($_GET['order']) && $_GET['order'] == 'desc') {
+                krsort($users);
+            } else {
+                ksort($users);
+            }
+            $users = array_values($users);
+            break;
+    }
+}
+$animals = [];
+foreach ($users as $user) {
+    $animals = array_merge($animals, $user['animals']);
+}
+$animalsFilter = array_unique($animals);
+
+if (!empty($_GET['filter'])) {
+    switch ($_GET['filter']) {
+        case 'man':
+            foreach ($users as $key => $user) {
+                if ($user['gender'] !== 'man') {
+                    unset($users[$key]);
+                }
+            }
+            break;
+        case 'woman':
+            foreach ($users as $key => $user) {
+                if ($user['gender'] !== 'woman') {
+                    unset($users[$key]);
+                }
+            }
+            break;
+        case 'covid':
+            foreach ($users as $key => $user) {
+                if ($user['age'] < 60) {
+                    unset($users[$key]);
+                }
+            }
+            break;
+        case 'cat':
+        case 'parrot':
+        case 'horse':
+        case 'dog':
+            foreach ($users as $key => $user) {
+                $index = array_search($_GET['filter'], $user['animals']);
+                if (false === $index) {
+                    unset($users[$key]);
+                }
+            }
+            break;
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -91,44 +155,53 @@ $randomUser = $users[$randomUserId];
 <h1>Статистика</h1>
 <div class="container">
     <ul>
-        <li>Самый старый пользователь: <?=$oldestUser['name'] . " " . $oldestUser['surname'] . ", age:" . $oldestUser['age']; ?></li>
+        <li>Самый старый
+            пользователь: <?= $oldestUser['name'] . " " . $oldestUser['surname'] . ", age:" . $oldestUser['age']; ?></li>
         <?php if (!empty($oldestUser2)) : ?>
-        <li>Самый старый пользователь (2): <?=$oldestUser2['name'] . " " . $oldestUser2['surname'] . ", age:" . $oldestUser2['age']; ?></li>
+            <li>Самый старый пользователь
+                (2): <?= $oldestUser2['name'] . " " . $oldestUser2['surname'] . ", age:" . $oldestUser2['age']; ?></li>
         <?php endif ?>
-        <li>Общее количество юзеров: <?=count($users) ?></li>
+        <li>Общее количество юзеров: <?= count($users) ?></li>
         <li>Питомцы Меркель: <?php
             $animals = $users[3]['animals'];
             sort($animals);
             echo "<ul><li>" . implode('</li><li>', $animals) . "</li></ul>"
             ?></li>
     </ul>
-    <table class="table table-striped">
+    <table class="table">
         <thead>
         <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Surname</th>
-            <th>Age</th>
-            <th>Picture</th>
+            <th><a href="?sort=id&order=<?=!empty($_GET['order']) && $_GET['order'] == 'desc'? 'asc': 'desc' ?>">#</a></th>
+            <th><a href="?sort=name&order=asc">Name</a></th>
+            <th><a href="?sort=surname">Surname</a></th>
+            <th><a href="?sort=age">Age</a></th>
+            <th><a href="?sort=avatar">Picture</a></th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-           <td><?=$jackId ?></td>
-           <td><?=$users[$jackId]['name'] ?></td>
-           <td><?=$users[$jackId]['surname'] ?></td>
-           <td><?=$users[$jackId]['age'] ?></td>
-           <td><img src="<?=$users[$jackId]['avatar'] ?>" style="width:60px"/></td>
-        </tr>
-        <tr>
-           <td><?=$randomUserId ?></td>
-           <td><?=$randomUser['name'] ?></td>
-           <td><?=$randomUser['surname'] ?></td>
-           <td><?=$randomUser['age'] ?></td>
-           <td><img src="<?=$randomUser['avatar'] ?>" style="width:60px"/></td>
-        </tr>
+        <?php foreach ($users as $key => $user) : ?>
+            <?php $id = (!empty($_GET['sort']) && $_GET['sort'] == 'id' && $_GET['order'] == 'desc') ? count($users) - $key : $key + 1; ?>
+            <tr style="background-color: <?=($key%2 ===0) ? '#aaa': '#fff' ?>">
+                <td><?=$id ?></td>
+                <td><?=$user['name'] ?></td>
+                <td><?=$user['surname'] ?></td>
+                <td><?=$user['age'] ?></td>
+                <td><img src="<?=$user['avatar'] ?>" style="width:60px"/></td>
+            </tr>
+        <?php endforeach; ?>
         </tbody>
     </table>
+    <form method="get">
+    <select name="filter">
+        <option value="man">Только мужчины</option>
+        <option value="woman">Только женщины</option>
+        <option value="covid">Риск COVID age > 60</option>
+        <?php foreach ($animalsFilter as $animal) :?>
+            <option value="<?=$animal ?>"><?=$animal ?></option>
+        <?php endforeach; ?>
+    </select>
+    <input type="submit">
+    </form>
     <a href="user.php">На страницу регистрации</a>
 </div>
 </body>
