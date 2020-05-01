@@ -1,50 +1,10 @@
 <?php
 define('NEW_LINE', '<br />');
 
-
-function helloWorld($username)
-{
-    global $username;
-    return "<h2>Hello from $username</h2><br />";
-}
-
-$users = [
-    [
-        'name' => 'Bob',
-        'surname' => 'Martin',
-        'age' => 75,
-        'gender' => 'man',
-        'avatar' => 'https://i.ytimg.com/vi/sDnPs_V8M-c/hqdefault.jpg',
-        'animals' => ['dog']
-    ],
-    [
-        'name' => 'Alice',
-        'surname' => 'Merton',
-        'age' => 25,
-        'gender' => 'woman',
-        'avatar' => 'https://i.scdn.co/image/d44a5d71596b03b5dc6f5bbcc789458700038951',
-        'animals' => ['dog', 'cat']
-    ],
-    [
-        'name' => 'Jack',
-        'surname' => 'Sparrow',
-        'age' => 45,
-        'gender' => 'man',
-        'avatar' => 'https://pbs.twimg.com/profile_images/427547618600710144/wCeLVpBa_400x400.jpeg',
-        'animals' => []
-    ],
-    [
-        'name' => 'Angela',
-        'surname' => 'Merkel',
-        'age' => 65,
-        'gender' => 'woman',
-        'avatar' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Besuch_Bundeskanzlerin_Angela_Merkel_im_Rathaus_K%C3%B6ln-09916.jpg/330px-Besuch_Bundeskanzlerin_Angela_Merkel_im_Rathaus_K%C3%B6ln-09916.jpg',
-        'animals' => ['dog', 'parrot', 'horse']
-    ]
-];
+$users = require_once 'db.php';
 
 if (!empty($_POST)) {
-    $users[] = $_POST;
+    $users[] = createUser($users);
 }
 
 
@@ -84,6 +44,10 @@ echo NEW_LINE;
 $randomUserId = rand(0, count($users) - 1);
 $randomUser = $users[$randomUserId];
 
+$surnames = array_column($users, 'surname');
+$merkelId = array_search('Merkel', $surnames);
+$merkelUser = $users[$merkelId];
+
 function sortFields($userA, $userB)
 {
     $order = $_GET['order'] ?? 'asc';
@@ -95,6 +59,20 @@ function sortFields($userA, $userB)
 
     return $userB[$filterName] <=> $userA[$filterName];
 }
+
+function createUser(array $users) : array
+{
+    $user = $_POST;
+    $user['animals'] = [];
+    $user['avatar'] = 'https://w0.pngwave.com/png/248/703/evey-hammond-guy-fawkes-mask-v-for-vendetta-v-for-vendetta-png-clip-art.png';
+    $users[] = $user;
+    $content = "<?php" . PHP_EOL;
+    $content = $content . "return " . var_export($users, 1);
+    $content .= ";";
+    file_put_contents('db.php', $content);
+    return $user;
+}
+
 //Вывести аватарки
 //Вывести домашних питомцев Меркель в алфавитном порядке
 if (!empty($_GET['sort'])) {

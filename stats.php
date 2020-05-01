@@ -14,8 +14,15 @@ require './functions.php';
 </head>
 <body>
 <br/>
-<h1>Статистика <?=helloWorld('From Top of the page') ?></h1>
 <div class="container">
+    <nav class="navbar navbar-light bg-light justify-content-between">
+        <a class="navbar-brand" href="export.php">Экспорт</a>
+        <form class="form-inline">
+            <input class="form-control mr-sm-2" type="file" name="import" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Загрузить</button>
+        </form>
+    </nav>
+    <h1>Статистика</h1>
     <ul>
         <li>Самый старый
             пользователь: <?= $oldestUser['name'] . " " . $oldestUser['surname'] . ", age:" . $oldestUser['age']; ?></li>
@@ -25,7 +32,7 @@ require './functions.php';
         <?php endif ?>
         <li>Общее количество юзеров: <?= count($users) ?></li>
         <li>Питомцы Меркель: <?php
-            $animals = $users[3]['animals'];
+            $animals = $merkelUser['animals'];
             sort($animals);
             echo "<ul><li>" . implode('</li><li>', $animals) . "</li></ul>"
             ?></li>
@@ -65,7 +72,6 @@ require './functions.php';
     <input type="submit">
     </form>
     <a href="user.php">На страницу регистрации</a>
-    <?=helloWorld('End of page') ?>
 </div>
 </body>
 </html>
