@@ -1,6 +1,7 @@
 <?php
 require 'functions.php';
 $book = getBookById($_GET['book_id']);
+$comments = getComments($book['book_id']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -75,8 +76,6 @@ $book = getBookById($_GET['book_id']);
                     <h3 class="card-title"><?=$book['title'] ?></h3>
                     <h4>$24.99</h4>
                     <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente dicta fugit fugiat hic aliquam itaque facere, soluta. Totam id dolores, sint aperiam sequi pariatur praesentium animi perspiciatis molestias iure, ducimus!</p>
-                    <span class="text-warning">&#9733; &#9733; &#9733; &#9733; &#9734;</span>
-                    4.0 stars
                 </div>
             </div>
             <!-- /.card -->
@@ -86,16 +85,20 @@ $book = getBookById($_GET['book_id']);
                     Product Reviews
                 </div>
                 <div class="card-body">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis et enim aperiam inventore, similique necessitatibus neque non! Doloribus, modi sapiente laboriosam aperiam fugiat laborum. Sequi mollitia, necessitatibus quae sint natus.</p>
-                    <small class="text-muted">Posted by Anonymous on 3/1/17</small>
+                    <?php foreach ($comments as $comment) : ?>
+                    <p><?=htmlspecialchars($comment['message']) ?></p>
+                    <small class="text-muted">Posted by Anonymous on <?=formatCommentDate($comment['added_at']) ?></small>
+                    <?=getStars($comment['rating']) ?>
                     <hr>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis et enim aperiam inventore, similique necessitatibus neque non! Doloribus, modi sapiente laboriosam aperiam fugiat laborum. Sequi mollitia, necessitatibus quae sint natus.</p>
-                    <small class="text-muted">Posted by Anonymous on 3/1/17</small>
-                    <hr>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis et enim aperiam inventore, similique necessitatibus neque non! Doloribus, modi sapiente laboriosam aperiam fugiat laborum. Sequi mollitia, necessitatibus quae sint natus.</p>
-                    <small class="text-muted">Posted by Anonymous on 3/1/17</small>
-                    <hr>
-                    <a href="#" class="btn btn-success">Leave a Review</a>
+                    <?php endforeach; ?>
+                    <form method="post" action="add_comment.php">
+                        <div class="form-group">
+                            <input name="book_id" type="hidden" value="<?=htmlspecialchars($_GET['book_id']) ?>">
+                            <label for="exampleFormControlTextarea1"></label>
+                            <textarea class="form-control" name="comment" id="exampleFormControlTextarea1" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">Добавить</button>
+                    </form>
                 </div>
             </div>
             <!-- /.card -->
@@ -111,7 +114,7 @@ $book = getBookById($_GET['book_id']);
 <!-- Footer -->
 <footer class="py-5 bg-dark">
     <div class="container">
-        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+        <p class="m-0 text-center text-white">Copyright &copy; Your Website <?=date('Y') ?></p>
     </div>
     <!-- /.container -->
 </footer>

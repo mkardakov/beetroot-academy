@@ -119,3 +119,5 @@ fi
 PHP_VESION=`php -v | grep -Po '^PHP[^-]+'`
 APACHE_VERSION=`apache2 -v | grep -Po 'Apache[^ ]+'`
 echo -e "Hello $USER. You are using \e[32m${PHP_VESION}\033[0m and \e[32m${APACHE_VERSION}\033[0m"
+
+cd /var/www/html
