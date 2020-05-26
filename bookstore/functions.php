@@ -10,15 +10,26 @@ function getPDO()
     return $pdo;
 }
 
-function getBooks() : array
+function getBooks(array $ids = []) : array
 {
     $page = getPageNumber();
     $offset = ($page - 1) * ITEMS_PER_PAGE;
-    $query = "SELECT b.id book_id, b.title, a.name author, g.name genre FROM book b
+    $query = "SELECT b.id book_id, b.title, a.name author, g.name genre, b.cost FROM book b
     left join author a ON a.id = b.author_id
     left join genre g ON g.id = b.genre_id
+    %s
     ORDER BY b.title LIMIT $offset,8
     ";
+//    SELECT b.id book_id, b.title, a.name author, g.name genre FROM book b
+//    left join author a ON a.id = b.author_id
+//    left join genre g ON g.id = b.genre_id
+//    WHERE b.id IN (2,3,4,5,7)
+//    ORDER BY b.title LIMIT $offset,8
+    $where = '';
+    if (!empty($ids)) {
+        $where = sprintf('WHERE b.id IN (%s)', implode(',',$ids));
+    }
+    $query = sprintf($query, $where);
     $pdo = getPDO();
     $result = $pdo->query($query);
     $result->setFetchMode(PDO::FETCH_ASSOC);
@@ -27,7 +38,7 @@ function getBooks() : array
 
 function getBookById($bookId) : array
 {
-    $query = "SELECT b.id book_id, b.title, a.name author, g.name genre, g.id genre_id FROM book b
+    $query = "SELECT b.id book_id, b.title, a.name author, g.name genre, g.id genre_id, b.cost FROM book b
     left join author a ON a.id = b.author_id
     left join genre g ON g.id = b.genre_id
     where b.id = ?
@@ -156,4 +167,43 @@ function getTotal() : int
         return $count;
     }
     return $count;
+}
+
+function addToCart($bookId, int $count = 1)
+{
+    $cart = [];
+    if (isset($_COOKIE['cart'])) {
+        $cart = json_decode($_COOKIE['cart'], true);
+    }
+    if (!isset($cart[$bookId])) {
+        $cart[$bookId] = 0;
+    }
+    //$cart[$bookId] = $cart[$bookId] + $count;
+    $cart[$bookId] += $count;
+    setcookie('cart', json_encode($cart), time() + 60 * 60 * 24 * 365);
+}
+
+function getItemsCount() : int
+{
+    $total = 0;
+    if (!empty($_COOKIE['cart'])) {
+        $cart = json_decode($_COOKIE['cart'], true);
+        foreach ($cart as $count) {
+            $total += $count;
+        }
+        //$total = array_sum($cart);
+    }
+    return $total;
+}
+
+function getCartItems() : array
+{
+    $cart = json_decode($_COOKIE['cart'], true);
+    // [book_id => count]
+    $ids = array_keys($cart);
+    $books = getBooks($ids);
+    foreach ($books as &$book) {
+        $book['count'] = $cart[  $book['book_id']    ];
+    }
+    return $books;
 }
