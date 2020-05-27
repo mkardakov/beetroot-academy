@@ -5,10 +5,10 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-            <button type="button" class="btn btn-success">
+            <a href="/cart.php" type="button" class="btn btn-success">
                 Корзина <span class="badge badge-light"><?=getItemsCount() ?></span>
                 <span class="sr-only">unread messages</span>
-            </button>
+            </a>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href="/">Home

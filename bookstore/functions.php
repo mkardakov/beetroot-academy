@@ -1,6 +1,8 @@
 <?php
 
 define('ITEMS_PER_PAGE', 8);
+define('PUB_KEY', 'sandbox_i96445077653');
+define('PRIVATE_KEY', 'sandbox_th2Vhc533WCmoAWPnlpcblegCT9JWX9UG3tbFUXe');
 
 function getPDO()
 {
@@ -195,6 +197,7 @@ function getItemsCount() : int
     }
     return $total;
 }
+// order_id INT | added_at | status ENUM
 
 function getCartItems() : array
 {
@@ -206,4 +209,70 @@ function getCartItems() : array
         $book['count'] = $cart[  $book['book_id']    ];
     }
     return $books;
+}
+
+/**
+ * Create order with books
+ *
+ * @return int
+ */
+function createOrder() : int
+{
+    $items = getCartItems();
+    $sql = 'INSERT INTO `order` VALUES()';
+    $pdo = getPDO();
+    $pdo->query($sql);
+    $orderId = $pdo->lastInsertId();
+    $sql = 'INSERT INTO order_book (order_id, book_id, `count`) VALUES (?, ?, ?)';
+    $stmt = $pdo->prepare($sql);
+    foreach ($items as $item) {
+        $stmt->execute([
+            $orderId,
+            $item['book_id'],
+            $item['count']
+        ]);
+    }
+    return $orderId;
+}
+
+/**
+ * Get total cost of current order
+ *
+ * @return float
+ */
+function getOrderTotal() : float
+{
+    $total = 0.0;
+    $items = getCartItems();
+    foreach ($items as $item) {
+        $total += $item['cost'] * $item['count'];
+    }
+    return $total;
+}
+
+/**
+ * @param $orderId
+ *
+ * @return string
+ */
+function getData($orderId)
+{
+    $data = sprintf(
+        '{"public_key":"%s","version":"3","action":"pay","amount":"%.2f","currency":"UAH","description":"Покупка на сайте книг","order_id":"%s"}',
+        PUB_KEY,
+        getOrderTotal(),
+        $orderId
+    );
+
+    return base64_encode($data);
+}
+
+/**
+ * @param $orderId
+ *
+ * @return string
+ */
+function getSignature($orderId)
+{
+    return base64_encode( sha1(PRIVATE_KEY . getData($orderId) . PRIVATE_KEY, true) );
 }
