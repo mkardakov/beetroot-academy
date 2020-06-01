@@ -1,5 +1,6 @@
 <?php
 require 'functions.php';
+session_start();
 $books = getBooks();
 ?>
 <!DOCTYPE html>
@@ -19,6 +20,9 @@ $books = getBooks();
 
     <!-- Custom styles for this template -->
     <link href="css/heroic-features.css" rel="stylesheet">
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 </head>
 
@@ -67,10 +71,27 @@ $books = getBooks();
     <!-- /.container -->
 </footer>
 
-<!-- Bootstrap core JavaScript -->
-<script src="vendor/jquery/jquery.min.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" style="display: none" data-toggle="modal" data-target="#exampleModalCenter">
+    Launch demo modal
+</button>
 
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Статус заказа</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <?=getPaymentStatusMessage() ?>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
