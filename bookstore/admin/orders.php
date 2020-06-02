@@ -371,9 +371,7 @@ require '../classes/OrderService.php';
                   <tbody>
                   <?php $service = new OrderService() ?>
                   <?php foreach ($service->getOrdersList() as $order) : ?>
-                    <li>
                       <td><?=$order['order_id'] ?></td>
-                        name </li></li> 
                       <td><ul><li><?=$order['items'] ?></li></ul></td>
                       <td><?=$order['amount'] ?></td>
                       <td><?=$order['added_at'] ?></td>
