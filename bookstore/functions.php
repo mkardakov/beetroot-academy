@@ -4,6 +4,9 @@ define('ITEMS_PER_PAGE', 8);
 define('PUB_KEY', 'sandbox_i96445077653');
 define('PRIVATE_KEY', 'sandbox_th2Vhc533WCmoAWPnlpcblegCT9JWX9UG3tbFUXe');
 
+/**
+ * @return PDO
+ */
 function getPDO()
 {
     $pdo = new PDO("mysql:dbname=bookstore;host=127.0.0.1;charset=utf8mb4", 'root', '',[
@@ -12,6 +15,10 @@ function getPDO()
     return $pdo;
 }
 
+/**
+ * @param array $ids
+ * @return array
+ */
 function getBooks(array $ids = []) : array
 {
     $page = getPageNumber();
@@ -38,6 +45,10 @@ function getBooks(array $ids = []) : array
     return $result->fetchAll();
 }
 
+/**
+ * @param $bookId
+ * @return array
+ */
 function getBookById($bookId) : array
 {
     $query = "SELECT b.id book_id, b.title, a.name author, g.name genre, g.id genre_id, b.cost FROM book b
@@ -52,6 +63,9 @@ function getBookById($bookId) : array
     return $result->fetch();
 }
 
+/**
+ * @return array
+ */
 function getGenres() : array
 {
     $query = 'SELECT id, name FROM genre';
@@ -60,6 +74,10 @@ function getGenres() : array
     return $result->fetchAll(PDO::FETCH_ASSOC);
 }
 
+/**
+ * @param $bookId
+ * @return array
+ */
 function getComments($bookId) : array
 {
     $query = 'SELECT * FROM comment WHERE book_id = ?';
@@ -69,6 +87,10 @@ function getComments($bookId) : array
     return $result->fetchAll(PDO::FETCH_ASSOC);
 }
 
+/**
+ * @param int $rating
+ * @return string
+ */
 function getStars(int $rating = 3)
 {
     $stars = '';
@@ -83,6 +105,10 @@ function getStars(int $rating = 3)
 }
 
 
+/**
+ * @param $comment
+ * @param $bookId
+ */
 function addComment($comment, $bookId)
 {
     $sql = "INSERT INTO `comment` (message, book_id) VALUES (:comment, :book)";
@@ -94,12 +120,19 @@ function addComment($comment, $bookId)
     ]);
 }
 
+/**
+ * @param string $date
+ * @return string
+ */
 function formatCommentDate(string $date) : string
 {
     $time = strtotime($date);
     return date('n/j/y', $time);
 }
 
+/**
+ * @return int
+ */
 function getPageNumber() : int
 {
     $page = $_GET['page'] ?? 1;
@@ -113,6 +146,9 @@ function getPageNumber() : int
     return $page;
 }
 
+/**
+ * @return string
+ */
 function paginate()
 {
     $page = getPageNumber();
@@ -157,6 +193,9 @@ function paginate()
 PAGE;
 }
 
+/**
+ * @return int
+ */
 function getTotal() : int
 {
     static $count;
@@ -171,6 +210,10 @@ function getTotal() : int
     return $count;
 }
 
+/**
+ * @param $bookId
+ * @param int $count
+ */
 function addToCart($bookId, int $count = 1)
 {
     $cart = [];
@@ -185,6 +228,9 @@ function addToCart($bookId, int $count = 1)
     setcookie('cart', json_encode($cart), time() + 60 * 60 * 24 * 365);
 }
 
+/**
+ * @return int
+ */
 function getItemsCount() : int
 {
     $total = 0;
@@ -199,6 +245,9 @@ function getItemsCount() : int
 }
 // order_id INT | added_at | status ENUM
 
+/**
+ * @return array
+ */
 function getCartItems() : array
 {
     $cart = json_decode($_COOKIE['cart'] ?? '', true);
@@ -280,6 +329,10 @@ function getSignature($orderId)
     return base64_encode( sha1(PRIVATE_KEY . getData($orderId) . PRIVATE_KEY, true) );
 }
 
+/**
+ * @param string $data
+ * @return array
+ */
 function updateOrder(string $data)
 {
     $paymentData = json_decode(base64_decode($data), true);
@@ -300,6 +353,9 @@ function updateOrder(string $data)
     return [$orderId, $status];
 }
 
+/**
+ * @return string
+ */
 function getPaymentStatusMessage()
 {
     if (!empty($_SESSION['order_id'])) {
