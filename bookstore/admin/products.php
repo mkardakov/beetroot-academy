@@ -1,6 +1,6 @@
 <?php
 require 'admin_functions.php';
-require '../classes/OrderService.php';
+require '../classes/ProductService.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -242,30 +242,34 @@ require '../classes/OrderService.php';
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Номер Заказа</th>
-                      <th>Товары</th>
-                      <th>Общая стоимость</th>
-                      <th>Дата заказа</th>
-                      <th>Статус</th>
+                      <th>ID товара</th>
+                      <th>Название</th>
+                      <th>Стоимость</th>
+                      <th>Автор</th>
+                      <th>Жанр</th>
+                      <th>Действия</th>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                        <th>Номер Заказа</th>
-                        <th>Товары</th>
-                        <th>Общая стоимость</th>
-                        <th>Дата заказа</th>
-                        <th>Статус</th>
+                        <th>ID товара</th>
+                        <th>Название</th>
+                        <th>Стоимость</th>
+                        <th>Автор</th>
+                        <th>Жанр</th>
+                        <th>Действия</th>
                     </tr>
                   </tfoot>
                   <tbody>
-                  <?php $service = new OrderService() ?>
-                  <?php foreach ($service->getOrdersList() as $order) : ?>
-                      <td><?=$order['order_id'] ?></td>
-                      <td><ul><li><?=$order['items'] ?></li></ul></td>
-                      <td><?=$order['amount'] ?></td>
-                      <td><?=$order['added_at'] ?></td>
-                      <td><?=$order['status'] ?></td>
+                  <?php $service = new ProductService(false);
+                  ?>
+                  <?php foreach ($service->getProductsList() as $product) : ?>
+                      <td><?=$product['book_id'] ?></td>
+                      <td><?=$product['title'] ?></td>
+                      <td><?=$product['cost'] ?></td>
+                      <td><?=$product['genre'] ?></td>
+                      <td><?=$product['author'] ?></td>
+                      <td><a href="/admin/product_edit.php?book_id=<?=$product['book_id'] ?>">Редактировать</a>&nbsp;<a href="#">Удалить</a> </td>
                     </tr>
                   <?php endforeach; ?>
                 </tbody>
