@@ -1,5 +1,5 @@
 <?php
-
+require 'vendor/autoload.php';
 define('ITEMS_PER_PAGE', 8);
 define('PUB_KEY', 'sandbox_i96445077653');
 define('PRIVATE_KEY', 'sandbox_th2Vhc533WCmoAWPnlpcblegCT9JWX9UG3tbFUXe');
@@ -21,7 +21,7 @@ function getPDO()
  */
 function getBooks(array $ids = []) : array
 {
-    require "classes/ProductService.php";
+    require_once "classes/ProductService.php";
     $class = new ProductService();
     return $class->getProductsList($ids);
 }
@@ -32,7 +32,7 @@ function getBooks(array $ids = []) : array
  */
 function getBookById($bookId) : array
 {
-    require "classes/ProductService.php";
+    require_once "classes/ProductService.php";
     $class = new ProductService();
     return $class->getBookById($bookId);
 }
@@ -213,11 +213,9 @@ function getItemsCount() : int
         foreach ($cart as $count) {
             $total += $count;
         }
-        //$total = array_sum($cart);
     }
     return $total;
 }
-// order_id INT | added_at | status ENUM
 
 /**
  * @return array
@@ -324,6 +322,26 @@ function updateOrder(string $data)
         'order_id' => $orderId,
         'amount' => $amount
     ]);
+    // Create the Transport
+    $transport = (new Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl'))
+        ->setUsername('bookstore.beetroot@gmail.com')
+        ->setPassword('beetroot123')
+    ;
+// Create the Mailer using your created Transport
+    $mailer = new Swift_Mailer($transport);
+
+// Create a message
+    ob_start();
+    require 'my-email-template.php';
+    $email = ob_get_clean();
+    $message = (new Swift_Message('Заказ на сайте'))
+        ->setFrom(['bookstore.beetroot@gmail.com' => 'Магазин'])
+        ->setTo(['work.zjiodeu@gmail.com'])
+        ->setBody($email, 'text/html')
+    ;
+
+// Send the message
+    $result = $mailer->send($message);
     return [$orderId, $status];
 }
 

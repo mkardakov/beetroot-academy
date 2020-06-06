@@ -8,6 +8,9 @@ declare(strict_types=1);
 class ProductService
 {
 
+    /**
+     * @var bool
+     */
     private $isPaginationEnabled;
 
     /**
@@ -79,22 +82,63 @@ class ProductService
         try {
             $pdo = getPDO();
             $pdo->beginTransaction();
+            // UPDATE book SET author_id=<1>, cost=<2> WHERE id = ?
             $authorId = $this->upsertAuthor($data['author']);
             $genreId = $this->getGenre($data['genre']);
-            // TODO: update book
+            $sql = "UPDATE book SET author_id = :author, genre_id = :genre, cost = :cost, title = :title
+                    WHERE id = :book_id
+            ";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                'author' => $authorId,
+                'genre'  => $genreId,
+                'cost'   => $data['cost'],
+                'title'   => $data['title'],
+                'book_id' => $bookId
+            ]);
             $pdo->commit();
         } catch(Exception $e) {
+            echo "<h1>{$e->getMessage()}</h1>";
             $pdo->rollBack();
         }
     }
 
+    /**
+     * @param $name
+     * @return int
+     */
     private function upsertAuthor($name) : int
     {
-
+        $authorSql = 'SELECT id FROM author WHERE name like ?';
+        $pdo = getPDO();
+        $stmt = $pdo->prepare($authorSql);
+        $stmt->execute([$name]);
+        // автор найден
+        $authorId = (int)$stmt->fetchColumn();
+        if ($authorId) {
+            return $authorId;
+        }
+        $pdo = getPDO();
+        $sql = 'INSERT INTO author (name) VALUES (?)';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$name]);
+        return (int) $pdo->lastInsertId();
     }
 
+    /**
+     * @param $name
+     * @return int
+     */
     private function getGenre($name) : int
     {
-
+        $genre = 'SELECT id FROM genre WHERE name like ?';
+        $pdo = getPDO();
+        $stmt = $pdo->prepare($genre);
+        $stmt->execute([$name]);
+        $genreId = (int) $stmt->fetchColumn();
+        if (!empty($genreId)) {
+            return $genreId;
+        }
+        throw new Exception('Something wrong with product edit');
     }
 }

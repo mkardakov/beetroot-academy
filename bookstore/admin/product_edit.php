@@ -1,7 +1,6 @@
 <?php
 require 'admin_functions.php';
-require '../classes/ProductService.php';
-require '../classes/GenreService.php';
+require '../autoload.php';
 $productService = new ProductService();
 if (empty($_GET['book_id'])) {
     die('Bad URL');

@@ -1,0 +1,8 @@
+{
+    "autoload" : {
+        "classmap": ["classes/"]
+    },
+    "require": {
+        "swiftmailer/swiftmailer": "^6.0"
+    }
+}

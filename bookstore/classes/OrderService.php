@@ -21,6 +21,17 @@ class OrderService
             order by o.added_at desc
         ';
         $stmt = getPDO()->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $resultArr = $stmt->fetchAll();
+        $colorizeFunc = function($status, $color) {
+            if ($status == 'failed') {
+                return "<span style='color:$color'>$status</span>";
+            }
+            return $status;
+        };
+        $result = array_map(function($order) use ($colorizeFunc) {
+            $order['status'] = $colorizeFunc($order['status'], 'green');
+            return $order;
+        }, $resultArr);
+        return $result;
     }
 }

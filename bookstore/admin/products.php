@@ -269,7 +269,8 @@ require '../classes/ProductService.php';
                       <td><?=$product['cost'] ?></td>
                       <td><?=$product['genre'] ?></td>
                       <td><?=$product['author'] ?></td>
-                      <td><a href="/admin/product_edit.php?book_id=<?=$product['book_id'] ?>">Редактировать</a>&nbsp;<a href="#">Удалить</a> </td>
+                      <td><a href="/admin/product_edit.php?book_id=<?=$product['book_id'] ?>">Редактировать</a>&nbsp;
+                          <a href="/admin/product_delete.php?book_id=<?=$product['book_id'] ?>">Удалить</a> </td>
                     </tr>
                   <?php endforeach; ?>
                 </tbody>
