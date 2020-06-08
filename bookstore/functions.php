@@ -32,7 +32,6 @@ function getBooks(array $ids = []) : array
  */
 function getBookById($bookId) : array
 {
-    require_once "classes/ProductService.php";
     $class = new ProductService();
     return $class->getBookById($bookId);
 }
@@ -334,6 +333,7 @@ function updateOrder(string $data)
     ob_start();
     require 'my-email-template.php';
     $email = ob_get_clean();
+
     $message = (new Swift_Message('Заказ на сайте'))
         ->setFrom(['bookstore.beetroot@gmail.com' => 'Магазин'])
         ->setTo(['work.zjiodeu@gmail.com'])

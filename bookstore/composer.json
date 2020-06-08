@@ -1,6 +1,6 @@
 {
     "autoload" : {
-        "classmap": ["classes/"]
+        "classmap": ["./classes/ProductService.php"]
     },
     "require": {
         "swiftmailer/swiftmailer": "^6.0"

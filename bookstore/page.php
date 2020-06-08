@@ -1,4 +1,5 @@
 <?php
+require 'vendor/autoload.php';
 require 'functions.php';
 $book = getBookById($_GET['book_id']);
 $comments = getComments($book['book_id']);
