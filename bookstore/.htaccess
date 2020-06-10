@@ -1,0 +1,9 @@
+RewriteEngine on
+AddType application/x-httpd-php .php
+
+RewriteRule ^page/(\d+)/?$ page.php?book_id=$1
+RewriteRule ^admin/product/edit/(\d+)$ admin/product_edit.php?book_id=$1
+
+RedirectMatch "^admin" "admin/product/edit/$1"
+
+RewriteRule ^page/(\d+/)?(.*\.(css|js))$ /$2

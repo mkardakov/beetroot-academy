@@ -21,7 +21,6 @@ function getPDO()
  */
 function getBooks(array $ids = []) : array
 {
-    require_once "classes/ProductService.php";
     $class = new ProductService();
     return $class->getProductsList($ids);
 }
@@ -369,4 +368,13 @@ function getPaymentStatusMessage()
         unset($_SESSION['order_id']);
         return $message;
     }
+}
+
+/**
+ * @param array $book
+ * @return string
+ */
+function getBookUrl(array $book)
+{
+    return '';
 }
