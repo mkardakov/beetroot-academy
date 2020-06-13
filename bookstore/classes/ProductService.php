@@ -30,7 +30,7 @@ class ProductService
     {
         $page = getPageNumber();
         $offset = ($page - 1) * ITEMS_PER_PAGE;
-        $query = "SELECT b.id book_id, b.title, a.name author, g.name genre, b.cost FROM book b
+        $query = "SELECT b.id book_id, b.title, b.url, a.name author, g.name genre, b.cost FROM book b
     left join author a ON a.id = b.author_id
     left join genre g ON g.id = b.genre_id
     %s
@@ -69,6 +69,24 @@ class ProductService
         $pdo = getPDO();
         $result = $pdo->prepare($query);
         $result->execute([$id]);
+        $result->setFetchMode(PDO::FETCH_ASSOC);
+        return $result->fetch();
+    }
+
+    /**
+     * @param $url
+     * @return array
+     */
+    public function getBookByUrl($url) : array
+    {
+        $query = "SELECT b.id book_id, b.title, a.name author, g.name genre, g.id genre_id, b.cost FROM book b
+    left join author a ON a.id = b.author_id
+    left join genre g ON g.id = b.genre_id
+    where b.url = ?
+    ";
+        $pdo = getPDO();
+        $result = $pdo->prepare($query);
+        $result->execute([$url]);
         $result->setFetchMode(PDO::FETCH_ASSOC);
         return $result->fetch();
     }

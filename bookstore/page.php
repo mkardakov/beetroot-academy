@@ -1,7 +1,17 @@
 <?php
-require 'vendor/autoload.php';
 require 'functions.php';
-$book = getBookById($_GET['book_id']);
+try {
+    if (!empty($_GET['book_id'])) {
+        $book = getBookById($_GET['book_id']);
+    } else if (!empty($_GET['url'])) {
+        $book = getBookByUrl($_GET['url']);
+    } else {
+        throw new \Exception('');
+    }
+} catch (\Throwable $err) {
+    header("HTTP/1.1 404 Not Found");
+    exit();
+}
 $comments = getComments($book['book_id']);
 ?>
 <!DOCTYPE html>
@@ -53,7 +63,7 @@ $comments = getComments($book['book_id']);
                     <h4>₴ <?=$book['cost'] ?></h4>
                     <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente dicta fugit fugiat hic aliquam itaque facere, soluta. Totam id dolores, sint aperiam sequi pariatur praesentium animi perspiciatis molestias iure, ducimus!</p>
                 </div>
-                <form class="form-inline" method="post" action="add_to_cart.php">
+                <form class="form-inline" method="post" action="/add_to_cart.php">
                     <div class="form-group">
                         <input type="hidden" name="book_id" value="<?=$book['book_id'] ?>">
                         <label for="count">Количество: </label>
@@ -78,7 +88,7 @@ $comments = getComments($book['book_id']);
                     <?php endforeach; ?>
                     <form method="post" action="add_comment.php">
                         <div class="form-group">
-                            <input name="book_id" type="hidden" value="<?=htmlspecialchars($_GET['book_id']) ?>">
+                            <input name="book_id" type="hidden" value="<?=htmlspecialchars($book['book_id']) ?>">
                             <label for="exampleFormControlTextarea1"></label>
                             <textarea class="form-control" name="comment" id="exampleFormControlTextarea1" rows="3" required></textarea>
                         </div>
