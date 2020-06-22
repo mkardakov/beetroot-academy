@@ -17,7 +17,7 @@ abstract class Command
     protected function execute(string $command) : array
     {
         $output = [];
-        exec($command, $output);
+        exec(escapeshellcmd($command), $output);
         return $output;
     }
 

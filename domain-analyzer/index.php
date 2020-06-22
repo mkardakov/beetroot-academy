@@ -15,24 +15,39 @@
 <body>
 <div class="container h-100">
     <div class="d-flex justify-content-center h-100">
+        <img id="preloader" src="/assets/preloader.gif" style="position:fixed; width:150px; display: none"/>
         <div class="searchbar">
             <input class="search_input" type="text" name="" placeholder="Search...">
             <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="main" checked>
+                <label class="form-check-label" for="inlineRadio1">Mac</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="table">
+                <label class="form-check-label" for="inlineRadio2">Table</label>
+            </div>
             <div id="output"></div>
         </div>
     </div>
 </div>
 <script>
     $('.search_input').on('keypress', function(e) {
-        if (e.which == 13) {
+        if (e.which === 13) {
+            $('#preloader').show();
             $.ajax({
                 url : '/ajax.php',
                 method: 'post',
-                data : {search: $(this).val()}
+                data : {
+                    search: $(this).val(),
+                    type : document.querySelector('input[name="inlineRadioOptions"]:checked').value
+                }
             }).done(function(data) {
                 $('#output').html(data);
             }).fail(function(xhr, error) {
                 console.log(arguments);
+            }).always(function() {
+                $('#preloader').hide();
             })
         }
     });

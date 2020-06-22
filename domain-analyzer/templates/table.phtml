@@ -1,0 +1,27 @@
+<section class="terminal-container terminal-fixed-top">
+  <header class="terminal">
+    <span class="button red"></span>
+    <span class="button yellow"></span>
+    <span class="button green"></span>
+  </header>
+
+  <div class="terminal-home">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Поле</th>
+            <th>Значение</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($output as $line) : ?>
+            <?php $values = explode(":", $line); ?>
+            <tr>
+                <td><?=$values[0] ?? 'unknown' ?></td>
+                <td><?=$values[1] ?? "unknown" ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+  </div>
+</section>
