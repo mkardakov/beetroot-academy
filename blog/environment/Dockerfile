@@ -17,7 +17,7 @@ RUN curl -s https://getcomposer.org/installer > composer-setup.php \
 RUN pecl install xdebug-2.8.1 \
 	&& docker-php-ext-enable xdebug \
 	&& a2enmod rewrite \
-	&& docker-php-ext-install pdo_mysql intl zip
+	&& docker-php-ext-install pdo_mysql intl zip opcache
 
 COPY ./environment/php.ini $PHP_INI_DIR/php.ini
 
