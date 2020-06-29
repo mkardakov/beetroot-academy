@@ -14,6 +14,7 @@ class ArticleType extends AbstractType
         $builder
             ->add('title')
             ->add('body')
+            ->add('category')
         ;
     }
 

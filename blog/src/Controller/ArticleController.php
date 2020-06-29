@@ -3,8 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Category;
+use App\Entity\Comment;
 use App\Form\ArticleType;
+use App\Form\CommentType;
 use App\Repository\ArticleRepository;
+use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +25,17 @@ class ArticleController extends AbstractController
     public function index(ArticleRepository $articleRepository): Response
     {
         return $this->render('article/index.html.twig', [
-            'articles' => $articleRepository->findAll(),
+            'articles' => $articleRepository->findAll()
+        ]);
+    }
+
+    /**
+     * @Route("/flows/{id}", name="flow_show", methods={"GET"})
+     */
+    public function flowShow(Category $category): Response
+    {
+        return $this->render('article/index.html.twig', [
+            'articles' => $category->getArticles()
         ]);
     }
 
@@ -53,8 +67,10 @@ class ArticleController extends AbstractController
      */
     public function show(Article $article): Response
     {
+        $form = $this->createForm(CommentType::class, new Comment());
         return $this->render('article/show.html.twig', [
-            'article' => $article,
+            'article'  => $article,
+            'form'     => $form->createView()
         ]);
     }
 
