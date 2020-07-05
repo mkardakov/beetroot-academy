@@ -6,6 +6,7 @@ use App\Entity\Article;
 use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,6 +49,24 @@ class CommentController extends AbstractController
             'comment' => $comment,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/reply/{id}/{commentId}", name="add_reply", methods={"POST"})
+     * @ParamConverter("comment", options={"id" = "commentId"})
+     */
+    public function addReply(Request $request, Article $article, Comment $comment): Response
+    {
+        $reply = new Comment();
+        $entityManager = $this->getDoctrine()->getManager();
+        $reply->setArticle($article);
+        $reply->setReplyTo($comment);
+        $body = $request->request->get('body');
+        $reply->setBody($body);
+        $entityManager->persist($reply);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
     }
 
     /**

@@ -3,6 +3,8 @@
 {% block title %}Article{% endblock %}
 
 {% block body %}
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v7.0&appId=819459864922023&autoLogAppEvents=1" nonce="1Euinhxn"></script>
     {% include 'article/sub/header.html.twig' %}
 
     <!-- Page Header -->
@@ -32,8 +34,12 @@
                     <p>Placeholder text by
                         <a href="http://spaceipsum.com/">Space Ipsum</a>. Photographs by
                         <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>.</p>
+                    {% for tag in article.tags %}
+                        <a href="{{ path('tag_show', {'id': tag.id}) }}" class="badge {{ tag.color }}">#{{ tag.title }}</a>
+                    {% endfor %}
                 </div>
             </div>
+
             {{ include('article/sub/comment.html.twig') }}
             {{ include('comment/_form.html.twig') }}
         </div>
