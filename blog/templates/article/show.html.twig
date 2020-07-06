@@ -41,7 +41,9 @@
             </div>
 
             {{ include('article/sub/comment.html.twig') }}
-            {{ include('comment/_form.html.twig') }}
+            {% if is_granted('ROLE_USER') %}
+                {{ include('comment/_form.html.twig') }}
+            {% endif %}
         </div>
     </article>
 

@@ -8,6 +8,7 @@ use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -57,6 +58,12 @@ class CommentController extends AbstractController
      */
     public function addReply(Request $request, Article $article, Comment $comment): Response
     {
+        $submittedToken = $request->request->get('token');
+
+        // 'delete-item' is the same value used in the template to generate the token
+        if (!$this->isCsrfTokenValid('comment-token', $submittedToken)) {
+            throw new BadRequestException('Bad CSRF token from comment form received');
+        }
         $reply = new Comment();
         $entityManager = $this->getDoctrine()->getManager();
         $reply->setArticle($article);
