@@ -40,6 +40,7 @@ class CommentController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $comment->setArticle($article);
+            $comment->setUser($this->getUser());
             $entityManager->persist($comment);
             $entityManager->flush();
 
@@ -68,6 +69,7 @@ class CommentController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $reply->setArticle($article);
         $reply->setReplyTo($comment);
+        $reply->setUser($this->getUser());
         $body = $request->request->get('body');
         $reply->setBody($body);
         $entityManager->persist($reply);
