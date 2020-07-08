@@ -7,17 +7,41 @@ use App\Entity\Comment;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @Route("/comment")
  */
 class CommentController extends AbstractController
 {
+
+    /**
+     * @var MailerInterface
+     */
+    private $mailer;
+
+    private $router;
+
+
+    /**
+     * CommentController constructor.
+     * @param MailerInterface $mailer
+     */
+    public function __construct(MailerInterface $mailer, RouterInterface $router)
+    {
+        $this->mailer = $mailer;
+        $this->router = $router;
+    }
+
     /**
      * @Route("/", name="comment_index", methods={"GET"})
      */
@@ -74,7 +98,7 @@ class CommentController extends AbstractController
         $reply->setBody($body);
         $entityManager->persist($reply);
         $entityManager->flush();
-
+        $this->sendNotification($reply);
         return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
     }
 
@@ -120,5 +144,32 @@ class CommentController extends AbstractController
         }
 
         return $this->redirectToRoute('comment_index');
+    }
+
+    /**
+     * @param Comment $reply
+     * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
+     */
+    private function sendNotification(Comment $reply)
+    {
+        $email = (new TemplatedEmail())
+            ->from('no-reply@symfony-blog.com.ua')
+            ->to(new Address($reply->getReplyTo()->getUser()->getEmail(), 'Beetroot'))
+            ->subject('Получен новый ответ на ваш комментарий')
+
+            // path of the Twig template to render
+            ->htmlTemplate('emails/reply.html.twig')
+
+            // pass variables (name => value) to the template
+            ->context([
+                'reply' => $reply,
+                'page_url' => $this->router->generate(
+                    'article_show',
+                    ['id' => $reply->getArticle()->getId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                )
+            ])
+        ;
+        $this->mailer->send($email);
     }
 }
