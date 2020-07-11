@@ -19,6 +19,11 @@ RUN pecl install xdebug-2.8.1 \
 	&& a2enmod rewrite \
 	&& docker-php-ext-install pdo_mysql intl zip opcache
 
+RUN apt install -y cron vim && \
+	service cron start
+
 COPY ./environment/php.ini $PHP_INI_DIR/php.ini
+
+COPY ./environment/crontab /var/spool/cron/crontabs/root
 
 COPY ./environment/httpd.conf /etc/apache2/sites-available/000-default.conf

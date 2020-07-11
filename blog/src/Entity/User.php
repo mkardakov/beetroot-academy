@@ -62,6 +62,11 @@ class User implements UserInterface
      */
     private $comments;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default": 1})
+     */
+    private $isSubscribed = 1;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -192,6 +197,18 @@ class User implements UserInterface
                 $comment->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsSubscribed(): ?bool
+    {
+        return $this->isSubscribed;
+    }
+
+    public function setIsSubscribed(bool $isSubscribed): self
+    {
+        $this->isSubscribed = $isSubscribed;
 
         return $this;
     }
