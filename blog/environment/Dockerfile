@@ -23,7 +23,9 @@ RUN apt install -y cron vim && \
 	service cron start
 
 COPY ./environment/php.ini $PHP_INI_DIR/php.ini
-
+COPY ./environment/app.sh /usr/bin/app.sh
 COPY ./environment/crontab /var/spool/cron/crontabs/root
+
+RUN crontab /var/spool/cron/crontabs/root
 
 COPY ./environment/httpd.conf /etc/apache2/sites-available/000-default.conf
