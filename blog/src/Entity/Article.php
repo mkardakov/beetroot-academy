@@ -42,7 +42,7 @@ class Article
     private $updatedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="articles")
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="articles", fetch="EAGER")
      */
     private $category;
 
