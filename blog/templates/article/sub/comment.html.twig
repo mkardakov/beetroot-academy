@@ -16,7 +16,7 @@
 
                 </p>
                 <div class="clearfix"></div>
-                <p>{{ comment.body }}</p>
+                <p>{{ comment.body|raw }}</p>
                 <p>
                     <a class="float-right btn btn-outline-primary ml-2" id="btn-reply"> <i class="fa fa-reply"></i> Reply</a>
                 <div class="fb-like" data-href="{{ facebook_domain }}"

@@ -98,6 +98,24 @@ class User implements UserInterface
     }
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function setName(string $name) : self
+    {
+        $this->username = $name;
+        return $this;
+    }
+
+    public function getAllRoles() : array
+    {
+        return [
+            'ROLE_USER',
+            'ROLE_ADMIN',
+        ];
+    }
+
+    /**
      * A visual identifier that represents this user.
      *
      * @see UserInterface
@@ -115,7 +133,6 @@ class User implements UserInterface
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-        $roles[] = 'ROLE_ADMIN';
 
         return array_unique($roles);
     }
