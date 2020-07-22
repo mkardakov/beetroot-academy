@@ -24,6 +24,7 @@ class ArticleController extends AbstractController
      */
     public function index(ArticleRepository $articleRepository): Response
     {
+        //throw new \Exception('Something broken');
         return $this->render('article/index.html.twig', [
             'articles' => $articleRepository->findAll()
         ]);
