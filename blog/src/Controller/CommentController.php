@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\Comment;
+use App\Event\CommentEvent;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +20,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route("/comment")
@@ -56,7 +59,7 @@ class CommentController extends AbstractController
     /**
      * @Route("/new/{id}", name="comment_new", methods={"POST"})
      */
-    public function new(Request $request, Article $article, LoggerInterface $commentsLogger): Response
+    public function new(Request $request, Article $article, LoggerInterface $commentsLogger, EventDispatcherInterface $dispatcher): Response
     {
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
@@ -68,9 +71,7 @@ class CommentController extends AbstractController
             $comment->setUser($this->getUser());
             $entityManager->persist($comment);
             $entityManager->flush();
-            $commentsLogger->info($comment->getBody(), [
-                'user' => $this->getUser()
-            ]);
+            $dispatcher->dispatch(new CommentEvent($this->getUser(), $comment), CommentEvent::COMMENT_ADDED);
             return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
         }
 

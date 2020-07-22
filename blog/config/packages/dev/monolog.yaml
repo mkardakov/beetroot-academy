@@ -1,5 +1,5 @@
 monolog:
-    channels: ["main", "comments"]
+    channels: ["main", "comments", "auth"]
     handlers:
         main:
             type: stream
@@ -17,10 +17,12 @@ monolog:
             level: debug
             channels: ["comments"]
         auth:
-            type: stream
-            path: "%kernel.logs_dir%/auth.log"
+            type: service
+            id: 'telegram.handler'
+#            path: "%kernel.logs_dir%/auth.log"
             level: info
-            channels: ["security"]
+            channels: ["auth"]
+#            formatter: monolog.formatter.json
 
 
         # uncomment to get logging in your browser

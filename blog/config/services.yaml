@@ -32,5 +32,19 @@ services:
         tags:
             - {name: monolog.processor, method: customize, channel: comments}
 
+    telegram.handler:
+        class: Monolog\Handler\TelegramBotHandler
+        arguments:
+            $channel: '290337583'
+            $apiKey: '1354277979:AAGx_daEzehukJdJr9uaiV8vI_oX9RlbaUU'
+        calls:
+            - [setFormatter, ['@monolog.formatter.telegram_formatter']]
+
+    monolog.formatter.telegram_formatter:
+        class: Monolog\Formatter\LineFormatter
+        arguments:
+            - "%%level_name%%: %%message%%\n"
+
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
